@@ -52,11 +52,13 @@ application.properties
 Use maven to execute the spring boot application with target spring-boot:run, or compile a jar and run it using java -jar <jar_file>. Curl commands can be used to invoke the REST api from a linux or cygwin style environment once the application is running on a machine.
 
 Example Upload
-'''bash
+
+```bash
 curl -F "owner=Dan" -F "description=third file upload attempt" -F "file=@uploadFile.txt" localhost:8080/upload
-'''
+```
 
 Example Query
-'''bash
+
+```bash
 curl localhost:8080/fileMeta/1
-'''
+```
