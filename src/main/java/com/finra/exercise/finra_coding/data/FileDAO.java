@@ -13,8 +13,8 @@ import org.springframework.stereotype.Repository;
  */
 
 @Repository
-public interface FinraCodingFileDAO extends JpaRepository<FinraCodingFileMetadata, Long> {
+public interface FileDAO extends JpaRepository<FileMetadata, Long> {
  
-    public List<FinraCodingFileMetadata> findByOwnerContainingIgnoreCase(String owner);
+    public List<FileMetadata> findByOwnerContainingIgnoreCase(String owner);
  
 }

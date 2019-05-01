@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "metadata")
-public class FinraCodingFileMetadata {
+public class FileMetadata {
 	@Id
 	@GeneratedValue
 	@Column(name = "id", nullable = false)
@@ -32,7 +32,7 @@ public class FinraCodingFileMetadata {
 	/**
 	 * Constructor for an empty metadata
 	 */
-	public FinraCodingFileMetadata() {
+	public FileMetadata() {
 		super();
 	}
 	
@@ -44,7 +44,7 @@ public class FinraCodingFileMetadata {
 	 * @param owner
 	 * @param description
 	 */
-	public FinraCodingFileMetadata(String filename, String filepath, String owner, String description) {
+	public FileMetadata(String filename, String filepath, String owner, String description) {
 		super();
 		this.filename = filename;
 		this.relativefilepath = filepath;

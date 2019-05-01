@@ -15,8 +15,8 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.finra.exercise.finra_coding.data.FileManager;
-import com.finra.exercise.finra_coding.data.FinraCodingFileDAO;
-import com.finra.exercise.finra_coding.data.FinraCodingFileMetadata;
+import com.finra.exercise.finra_coding.data.FileDAO;
+import com.finra.exercise.finra_coding.data.FileMetadata;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -26,7 +26,7 @@ public class FinraCodingApplicationTests {
 	private FinraCodingController controller;
 	
 	@Autowired 
-	private FinraCodingFileDAO fileDAO;
+	private FileDAO fileDAO;
 	
 	@Autowired
 	private FileManager fileManager;
@@ -45,11 +45,11 @@ public class FinraCodingApplicationTests {
 	@Test
 	public void testDAORetrieveMeta() {
 	    // given
-	    FinraCodingFileMetadata file = new FinraCodingFileMetadata("test_file.txt","Dan\\test_file.txt", "Dan", "File description");
+	    FileMetadata file = new FileMetadata("test_file.txt","Dan\\test_file.txt", "Dan", "File description");
 	    fileDAO.save(file);
 	    fileDAO.flush();
 	    
-	    Optional<FinraCodingFileMetadata> found = fileDAO.findById(file.getId());
+	    Optional<FileMetadata> found = fileDAO.findById(file.getId());
 	 
 	    // then
 	    assertTrue(found.isPresent());

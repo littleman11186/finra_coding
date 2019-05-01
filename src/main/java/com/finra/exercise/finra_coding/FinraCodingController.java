@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.finra.exercise.finra_coding.data.FileManager;
-import com.finra.exercise.finra_coding.data.FinraCodingFileDAO;
-import com.finra.exercise.finra_coding.data.FinraCodingFileMetadata;
+import com.finra.exercise.finra_coding.data.FileDAO;
+import com.finra.exercise.finra_coding.data.FileMetadata;
 import com.finra.exercise.finra_coding.error.MetaDataException;
 
 /**
@@ -37,7 +37,7 @@ public class FinraCodingController {
 	Logger logger = LoggerFactory.getLogger(FinraCodingController.class);
 	
 	@Autowired
-	private FinraCodingFileDAO fileDAO;
+	private FileDAO fileDAO;
 	
 	@Autowired
 	private FileManager fileManager;
@@ -58,7 +58,7 @@ public class FinraCodingController {
 	 * @throws MetaDataException 
 	 */
 	@PostMapping(value = "/upload", consumes = { "multipart/form-data" }, produces = { "application/json" })
-	public FinraCodingFileMetadata uploadFile(@RequestParam("file") MultipartFile file,  @RequestParam("owner") String metaOwner, @RequestParam("description") String metaDescription) throws IllegalStateException, IOException, MetaDataException{
+	public FileMetadata uploadFile(@RequestParam("file") MultipartFile file,  @RequestParam("owner") String metaOwner, @RequestParam("description") String metaDescription) throws IllegalStateException, IOException, MetaDataException{
 		logger.info("Upload request recieved by "+metaOwner+" for "+file.getOriginalFilename());
 		
 		//Store file locally inside of directory with owner's name to keep files unique across owners
@@ -66,10 +66,10 @@ public class FinraCodingController {
 		logger.debug("Uploaded "+file.getOriginalFilename() + " to "+filePath);
 		
 		//Push to database if successful
-		FinraCodingFileMetadata meta = null;
+		FileMetadata meta = null;
 		try {
 			logger.debug("Saving file metadata to database");
-			meta = new FinraCodingFileMetadata(file.getOriginalFilename(), filePath, metaOwner, metaDescription);
+			meta = new FileMetadata(file.getOriginalFilename(), filePath, metaOwner, metaDescription);
 			fileDAO.save(meta);
 		} catch (Exception e) {
 			throw new MetaDataException(e.getLocalizedMessage(), e, meta);
@@ -96,14 +96,14 @@ public class FinraCodingController {
 	 */
 	@GetMapping(value = "/fileMeta/{fileId}")
 	@ResponseBody
-	public FinraCodingFileMetadata getMetadata(@PathVariable Long fileId){
+	public FileMetadata getMetadata(@PathVariable Long fileId){
 		
-		Optional<FinraCodingFileMetadata> metaSearch = fileDAO.findById(fileId);
+		Optional<FileMetadata> metaSearch = fileDAO.findById(fileId);
 		if(!metaSearch.isPresent()){
 			throw new IllegalArgumentException("Cannot find file by id "+fileId);
 		}
 		
-		FinraCodingFileMetadata meta = metaSearch.get();
+		FileMetadata meta = metaSearch.get();
 		
 		return meta;
 	}
@@ -120,13 +120,13 @@ public class FinraCodingController {
 	@GetMapping(value = "/fileContent/{fileId}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
 	public byte[] getContents(@PathVariable Long fileId) throws JSONException, MetaDataException{
 		
-		Optional<FinraCodingFileMetadata> metaSearch = fileDAO.findById(fileId);
+		Optional<FileMetadata> metaSearch = fileDAO.findById(fileId);
 		if(!metaSearch.isPresent()){
 			throw new IllegalArgumentException("Cannot find file by id "+fileId);
 		}
 		
 		//Get file for reading
-		FinraCodingFileMetadata meta = metaSearch.get();
+		FileMetadata meta = metaSearch.get();
 		File localFile = new File(fileManager.getAbsolutePath(meta.getRelativefilepath()));
 		FileInputStream fis = null;
 		
@@ -148,7 +148,7 @@ public class FinraCodingController {
 	@GetMapping(value = "/owners/{owner}")
     public Long[] getOwnerFiles(@PathVariable String owner) throws JSONException{
 		
-		List<FinraCodingFileMetadata> metaSearch = fileDAO.findByOwnerContainingIgnoreCase(owner);
+		List<FileMetadata> metaSearch = fileDAO.findByOwnerContainingIgnoreCase(owner);
 		if(metaSearch.isEmpty()){
 			throw new IllegalArgumentException("Cannot find files for owner "+owner);
 		}
