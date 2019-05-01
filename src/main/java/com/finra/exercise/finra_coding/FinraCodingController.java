@@ -109,9 +109,12 @@ public class FinraCodingController {
 	}
 	
 	/**
-	 * Return byte array contents of 
+	 * Return byte array contents of file
+	 * 
 	 * @param fileId
+	 * 
 	 * @return
+	 * 
 	 * @throws MetaDataException
 	 */
 	@GetMapping(value = "/fileContent/{fileId}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
