@@ -8,19 +8,15 @@ import java.util.List;
 import java.util.Optional;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -86,15 +82,21 @@ public class FinraCodingController {
 	}
 	
 	/**
-	 * Retrieve file metadata for requested fileId
+	 * Retrieve file metadata for requested fileId in json format
 	 * 
-	 * @param fileId
-	 * @return
-	 * @throws JSONException
+	 * @param fileId 	file id to retrieve metadata for
+	 * 
+	 * @return 	Json formatted metadata inlcluding
+	 * 
+	 * 			id
+	 * 			filename
+	 * 			owner
+	 * 			description
+	 * 
 	 */
 	@GetMapping(value = "/fileMeta/{fileId}")
 	@ResponseBody
-	public FinraCodingFileMetadata getMetadata(@PathVariable Long fileId) throws JSONException{
+	public FinraCodingFileMetadata getMetadata(@PathVariable Long fileId){
 		
 		Optional<FinraCodingFileMetadata> metaSearch = fileDAO.findById(fileId);
 		if(!metaSearch.isPresent()){
@@ -106,6 +108,12 @@ public class FinraCodingController {
 		return meta;
 	}
 	
+	/**
+	 * Return byte array contents of 
+	 * @param fileId
+	 * @return
+	 * @throws MetaDataException
+	 */
 	@GetMapping(value = "/fileContent/{fileId}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
 	public byte[] getContents(@PathVariable Long fileId) throws JSONException, MetaDataException{
 		

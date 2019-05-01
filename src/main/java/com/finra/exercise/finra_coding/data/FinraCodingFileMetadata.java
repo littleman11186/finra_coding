@@ -29,10 +29,21 @@ public class FinraCodingFileMetadata {
 	@Column(name = "description", length = 2048, nullable = false)
 	private String description;
 	
+	/**
+	 * Constructor for an empty metadata
+	 */
 	public FinraCodingFileMetadata() {
 		super();
 	}
 	
+	/**
+	 * Constructor for a new file metadata
+	 * 
+	 * @param filename
+	 * @param filepath
+	 * @param owner
+	 * @param description
+	 */
 	public FinraCodingFileMetadata(String filename, String filepath, String owner, String description) {
 		super();
 		this.filename = filename;
