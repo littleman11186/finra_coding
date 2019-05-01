@@ -46,3 +46,17 @@ application.properties
 	fileStoragePath={drive_path} - desired path for the file uploads to be managed inside of. Will create directory if it does not exist
 	
 	overwriteExisting={true/false} - Optional, default false - desired functionality when finding duplicate files to throw an error or simply overwrite with new values and return success
+	
+## Example:
+
+Use maven to execute the spring boot application with target spring-boot:run, or compile a jar and run it using java -jar <jar_file>. Curl commands can be used to invoke the REST api from a linux or cygwin style environment once the application is running on a machine.
+
+Example Upload
+'''bash
+curl -F "owner=Dan" -F "description=third file upload attempt" -F "file=@uploadFile.txt" localhost:8080/upload
+'''
+
+Example Query
+'''bash
+curl localhost:8080/fileMeta/1
+'''
