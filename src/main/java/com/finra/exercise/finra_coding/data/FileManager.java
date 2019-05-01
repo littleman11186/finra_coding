@@ -12,7 +12,10 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileManager {
 	
 	@Value("${fileStoragePath}")
-	protected String fileStoragePath;
+	private String fileStoragePath;
+	
+	@Value("${overwriteExisting:false}")
+	private boolean overwriteExisting;
 	
 	/**
 	 * Converts a file input into a local file under a directory named by it's owner.
@@ -39,7 +42,11 @@ public class FileManager {
 		String filePath = fileStoragePath + File.separator + ownerPath + File.separator + fileUpload.getOriginalFilename();
 		File file = new File(filePath);
 		if (file.exists()){
-			throw new FileAlreadyExistsException("File "+ fileUpload.getOriginalFilename() + " already exists for " + owner);
+			if(!overwriteExisting){
+				throw new FileAlreadyExistsException("File "+ fileUpload.getOriginalFilename() + " already exists for " + owner);
+			}else{
+				file.delete();
+			}
 		}
 		
 		fileUpload.transferTo(file);

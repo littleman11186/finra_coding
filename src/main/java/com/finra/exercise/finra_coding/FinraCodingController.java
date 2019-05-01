@@ -28,7 +28,6 @@ import com.finra.exercise.finra_coding.data.FileManager;
 import com.finra.exercise.finra_coding.data.FinraCodingFileDAO;
 import com.finra.exercise.finra_coding.data.FinraCodingFileMetadata;
 import com.finra.exercise.finra_coding.error.MetaDataException;
-import com.finra.exercise.finra_coding.messaging.ErrorResponseJson;
 
 /**
  * Upload/Download for file stream
@@ -63,7 +62,6 @@ public class FinraCodingController {
 	 * @throws MetaDataException 
 	 */
 	@PostMapping(value = "/upload", consumes = { "multipart/form-data" }, produces = { "application/json" })
-	@ResponseBody
 	public FinraCodingFileMetadata uploadFile(@RequestParam("file") MultipartFile file,  @RequestParam("owner") String metaOwner, @RequestParam("description") String metaDescription) throws IllegalStateException, IOException, MetaDataException{
 		logger.info("Upload request recieved by "+metaOwner+" for "+file.getOriginalFilename());
 		
@@ -136,12 +134,12 @@ public class FinraCodingController {
 		return bArray;
 	}
 	
-	@GetMapping(value = "/owner/{owner}")
-    public String getOwnerFiles(@PathVariable String owner) throws JSONException{
+	@GetMapping(value = "/owners/{owner}")
+    public Long[] getOwnerFiles(@PathVariable String owner) throws JSONException{
 		
-		List<FinraCodingFileMetadata> metaSearch = fileDAO.findByOwnerLike(owner);
-		if(!metaSearch.isEmpty()){
-			throw new IllegalArgumentException("Cannot find file by id "+owner);
+		List<FinraCodingFileMetadata> metaSearch = fileDAO.findByOwnerContainingIgnoreCase(owner);
+		if(metaSearch.isEmpty()){
+			throw new IllegalArgumentException("Cannot find files for owner "+owner);
 		}
 		
 		Long[] fileList = new Long[metaSearch.size()];
@@ -149,27 +147,6 @@ public class FinraCodingController {
 			fileList[pos] = metaSearch.get(pos).getId();
 		}
 		
-		JSONObject jo = new JSONObject(); 
-		jo.put("fileIds", fileList);
-		
-		return jo.toString();
+		return fileList;
 	}
-	
-	/**
-	 * Captures context of metadata where the error occurred for better troubleshooting
-	 * 
-	 * @param ex
-	 * @return
-	 */
-	@ExceptionHandler(MetaDataException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ResponseBody
-    public Object processValidationError(MetaDataException ex) {
-        String result = ex.getLocalizedMessage();
-        ErrorResponseJson response = new ErrorResponseJson(result);
-        response.setData(ex.getMeta());
-        logger.error(result, ex);
-        return response;
-    }
-	
 }
